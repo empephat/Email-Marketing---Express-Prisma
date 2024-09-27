@@ -50,11 +50,6 @@ passport.use(
               googleId: googleProfile.googleId,
               email: googleProfile.email,
               name: googleProfile.name,
-              //! todo: OBS VERKLIGEN TILLFÄLLIG DATA !!!!!::::::
-              /* hur i hela friden gör vi detta? i verkligheten. Gör vi lokal strategi behöver vi ju ha ett lösenord? 
-              Vi har typat detta så att man MÅSTE ha password. */
-              password: "lösenord",
-              age: 34,
 
             },
           });

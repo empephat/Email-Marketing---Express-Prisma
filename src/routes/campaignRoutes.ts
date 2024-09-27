@@ -1,15 +1,16 @@
 import { Router } from "express";
-import prisma from "../db/prisma.js";
+import prisma from "../db/prisma";
 const router = Router();
 
 
 //*Create new campaign --------------------------------->
 router.post("/", async (req, res) => {
-  const { CompanyName, companyDescription, productDescription, targetAudience, userId } = req.body;
+  const { campaignName, companyName, companyDescription, productDescription, targetAudience, userId } = req.body;
   try {
     const campaign = await prisma.campaign.create({
       data: {
-        CompanyName,
+        campaignName,
+        companyName,
         companyDescription,
         productDescription,
         targetAudience,
@@ -23,8 +24,8 @@ router.post("/", async (req, res) => {
   }
 });
 
-//* get all campaigns from one user--------------------->
-router.get('/:id', async (req, res) => {
+//* get all campaigns based on a persons id--------------------->
+router.get('/user/:id', async (req, res) => {
   const userId = req.params.id;
   try {
     const campaigns = await prisma.campaign.findMany({
@@ -33,7 +34,7 @@ router.get('/:id', async (req, res) => {
       },
       select: {
         id: true,
-        CompanyName: true,
+        companyName: true,
         companyDescription: true,
         productDescription: true,
         targetAudience: true,
@@ -69,21 +70,27 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-//* update one campaign--------------------------------->
-router.put('/:id', async (req, res) => {
-  try {
+//*____________________________________________________________________________________
+//*____________________________________________________________________________________
 
-  } catch (error) {
-    res.status(400).json({ error: 'unable to update campaign' })
-  }
-})
 
-//* delete one campaign--------------------------------->
-router.delete('/:id', async (req, res) => {
-  try {
+// //* update one campaign-------------KOD PÅ G-------------------->
+// router.put('/:id', async (req, res) => {
+//   try {
 
-  } catch (error) {
-    res.status(400).json({ error: 'unable to delete campaign' })
-  }
+//   } catch (error) {
+//     res.status(400).json({ error: 'unable to update campaign' })
+//   }
+// })
 
-})
+// //* delete one campaign-------------KOD PÅ G-------------------->
+// router.delete('/:id', async (req, res) => {
+//   try {
+
+//   } catch (error) {
+//     res.status(400).json({ error: 'unable to delete campaign' })
+//   }
+
+// })
+
+export default router;

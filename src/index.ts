@@ -4,6 +4,10 @@ import session from 'express-session'
 import dotenv from 'dotenv';
 import './strategies/google-strategy'
 
+import emailRoutes from './routes/emailRoutes'
+import campaignRoutes from './routes/campaignRoutes'
+import authRoutes from './routes/authRoutes'
+
 
 dotenv.config();
 
@@ -32,25 +36,13 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 
-//Routes
-// app.use("/api", loginRoute)
-// app.use("/api", logoutRoute)
-// app.use("/api", authRoutes);
-// app.search("/api", campaignManagement)
+//* Routes
+app.use("/auth", authRoutes);
+app.use("/api/campaigns", emailRoutes)
+app.use("/api/campaigns", campaignRoutes)
 
 
-// Google OAuth-routes
-app.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    successRedirect: "/dashboard",
-    failureRedirect: "/login",
-  })
-)
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port http://localhost:${PORT}`);
