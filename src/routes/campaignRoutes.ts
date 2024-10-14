@@ -2,11 +2,54 @@ import { Router } from "express";
 import prisma from "../db/prisma";
 const router = Router();
 
-
 //*Create new campaign --------------------------------->
-router.post("/", async (req, res) => {
-  const { campaignName, companyName, companyDescription, productDescription, targetAudience, userId } = req.body;
+// router.post("/createcampaign", async (req, res) => {
+//   const {
+//     campaignName,
+//     companyName,
+//     companyDescription,
+//     productDescription,
+//     targetAudience,
+//     userId,
+//   } = req.body;
+//   try {
+//     const campaign = await prisma.campaign.create({
+//       data: {
+//         campaignName,
+//         companyName,
+//         companyDescription,
+//         productDescription,
+//         targetAudience,
+//         userId,
+//       },
+//     });
+//     res.json(campaign);
+//   } catch (error) {
+//     res.status(400).json({ error: "Unable to create campaign" });
+//   }
+// });
+router.post("/createcampaign", async (req, res) => {
+  const {
+    campaignName,
+    companyName,
+    companyDescription,
+    productDescription,
+    targetAudience,
+    userId,
+  } = req.body;
+
   try {
+    if (
+      !campaignName ||
+      !companyName ||
+      !companyDescription ||
+      !productDescription ||
+      !targetAudience ||
+      !userId
+    ) {
+      return res.status(400).json({ error: "Alla fält måste fyllas i" });
+    }
+
     const campaign = await prisma.campaign.create({
       data: {
         campaignName,
@@ -16,21 +59,51 @@ router.post("/", async (req, res) => {
         targetAudience,
         userId,
       },
-
     });
     res.json(campaign);
+  } catch (error: any) {
+    console.error("Fel vid skapande av kampanj:", error);
+    res
+      .status(400)
+      .json({ error: "Kunde inte skapa kampanj", details: error.message });
+  }
+});
+
+//*get ALL campaign
+router.get("/allcampaigns", async (req, res) => {
+  try {
+    const campaigns = await prisma.campaign.findMany({
+      select: {
+        id: true,
+        campaignName: true,
+        companyName: true,
+        companyDescription: true,
+        productDescription: true,
+        targetAudience: true,
+        emails: {
+          select: {
+            id: true,
+            subject: true,
+            content: true,
+            recipients: true,
+          },
+        },
+      },
+    });
+    res.json(campaigns);
   } catch (error) {
-    res.status(400).json({ error: "Unable to create campaign" });
+    console.error("Error fetching campaigns:", error);
+    res.status(500).json({ error: "Unable to get campaigns" });
   }
 });
 
 //* get all campaigns based on a persons id--------------------->
-router.get('/user/:id', async (req, res) => {
+router.get("/user/:id", async (req, res) => {
   const userId = req.params.id;
   try {
     const campaigns = await prisma.campaign.findMany({
       where: {
-        userId: userId
+        userId: userId,
       },
       select: {
         id: true,
@@ -43,20 +116,20 @@ router.get('/user/:id', async (req, res) => {
             id: true,
             subject: true,
             content: true,
-            recipients: true
-          }
-        }
-      }
+            recipients: true,
+          },
+        },
+      },
     });
     res.json(campaigns);
   } catch (error) {
-    console.error('Error fetching campaigns:', error);
-    res.status(500).json({ error: 'Unable to get campaigns for the user' });
+    console.error("Error fetching campaigns:", error);
+    res.status(500).json({ error: "Unable to get campaigns for the user" });
   }
 });
 
 //* get one specific campaign--------------------------->
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
   const campaignId = req.params.id;
   try {
     const campaign = await prisma.campaign.findUnique({
@@ -66,13 +139,12 @@ router.get('/:id', async (req, res) => {
     });
     res.json(campaign);
   } catch (error) {
-    res.status(500).json({ error: 'failed to get campaign' })
+    res.status(500).json({ error: "failed to get campaign" });
   }
-})
+});
 
 //*____________________________________________________________________________________
 //*____________________________________________________________________________________
-
 
 // //* update one campaign-------------KOD PÅ G-------------------->
 // router.put('/:id', async (req, res) => {

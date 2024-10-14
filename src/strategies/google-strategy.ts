@@ -1,7 +1,7 @@
 import Express from "express";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import prisma from '../db/prisma';
+import prisma from "../db/prisma";
 
 // * TYPES
 interface googleUser {
@@ -27,8 +27,6 @@ passport.use(
       callbackURL: "/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
-
-
       // Spara google-profilen i en variabel och ge den TYPES (googleUser)
       const googleProfile: googleUser = {
         googleId: profile.id,
@@ -40,7 +38,7 @@ passport.use(
       try {
         // ...kontrollera om användaren redan finns i databasen
         let user = await prisma.user.findUnique({
-          where: { googleId: profile.id }
+          where: { googleId: profile.id },
         });
 
         if (!user) {
@@ -50,21 +48,17 @@ passport.use(
               googleId: googleProfile.googleId,
               email: googleProfile.email,
               name: googleProfile.name,
-
             },
           });
         }
 
-        done(null, user);  // Skicka användaren till Passport
+        done(null, user); // Skicka användaren till Passport
       } catch (error) {
         done(error);
       }
     }
-
-
-
   )
-)
+);
 
 // Serialisera användaren i sessionen
 passport.serializeUser((user: any, done) => {

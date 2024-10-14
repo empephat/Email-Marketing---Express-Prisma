@@ -6,15 +6,32 @@ import "./strategies/google-strategy";
 import emailRoutes from "./routes/emailRoutes";
 import campaignRoutes from "./routes/campaignRoutes";
 import authRoutes from "./routes/authRoutes";
-const cors = require("cors");
+import cors, { CorsOptions } from "cors";
 
+// const cors = require("cors");
 dotenv.config();
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
-app.use(cors());
+
+const corsOptions: CorsOptions = {
+  origin: "http://localhost:5173", // Replace with your frontend URL
+  credentials: true,
+  methods: "GET",
+  allowedHeaders: ["Content-Type"],
+};
+
+app.use(cors(corsOptions));
+
+// app.use(
+//   cors({
+//     allowedHeaders: ["Content-Type"],
+//     origin: "*",
+//     preflightContinue: true,
+//   })
+// );
 
 const sessionSecret = process.env.SESSION_SECRET;
 if (!sessionSecret) throw new Error("SESSION_SECRET must be set");
@@ -31,6 +48,9 @@ app.use(
     },
   })
 );
+
+// req.session.userId = user.id
+// req.session.userId = "en kokkiie sattes"
 
 app.use(passport.initialize());
 app.use(passport.session());
